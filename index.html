@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0A0A0A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Hybrid">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%230A0A0A'/%3E%3Ctext x='90' y='118' font-family='-apple-system,sans-serif' font-size='90' font-weight='900' text-anchor='middle' fill='%2300FF87'%3EH%3C/text%3E%3C/svg%3E">
+<title>Hybrid Training</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  :root {
+    --bg: #0A0A0A;
+    --card: #141414;
+    --card-hi: #1E1E1E;
+    --border: #262626;
+    --text: #FAFAFA;
+    --muted: #6B7280;
+    --dim: #404040;
+    --accent: #00FF87;
+    --accent-dim: rgba(0, 255, 135, 0.15);
+    --warn: #FFB020;
+    --safe-top: env(safe-area-inset-top);
+    --safe-bottom: env(safe-area-inset-bottom);
+  }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: calc(20px + var(--safe-top)) 18px calc(40px + var(--safe-bottom));
+  }
+  .nums { font-variant-numeric: tabular-nums; }
+  .label {
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  /* HEADER */
+  header { margin-bottom: 28px; }
+  .hello {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .name {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+  .countdown {
+    margin-top: 16px;
+    padding: 16px 18px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .countdown-label { display: block; }
+  .countdown-target {
+    display: block;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 4px;
+  }
+  .countdown-days {
+    font-size: 32px;
+    font-weight: 900;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+  }
+  .countdown-days-unit {
+    display: block;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-align: right;
+    font-weight: 600;
+    margin-top: -2px;
+  }
+
+  /* SECTIONS */
+  section { margin-bottom: 28px; }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin: 0;
+  }
+  .section-meta {
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  /* WEEK */
+  .week { display: grid; gap: 8px; }
+  .day {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: grid;
+    grid-template-columns: 44px 1fr auto;
+    align-items: center;
+    gap: 12px;
+    transition: background 0.15s;
+  }
+  .day.today {
+    background: var(--card-hi);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+  .day.rest { opacity: 0.55; }
+  .day-date {
+    text-align: center;
+    line-height: 1;
+  }
+  .day-dow {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-weight: 700;
+  }
+  .day-num {
+    font-size: 22px;
+    font-weight: 800;
+    margin-top: 4px;
+    letter-spacing: -0.02em;
+  }
+  .today .day-num { color: var(--accent); }
+  .day-body { min-width: 0; }
+  .day-title {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  .day-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .day-tag {
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .tag-test { background: var(--accent-dim); color: var(--accent); }
+  .tag-run { background: rgba(96, 165, 250, 0.15); color: #93C5FD; }
+  .tag-lift { background: rgba(251, 146, 60, 0.15); color: #FDBA74; }
+  .tag-rest { background: var(--border); color: var(--muted); }
+  .tag-mix { background: rgba(167, 139, 250, 0.15); color: #C4B5FD; }
+
+  /* TARGETS */
+  .target {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 10px;
+  }
+  .target-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .target-name {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+  .target-deadline {
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .target-numbers {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin: 8px 0 10px;
+  }
+  .target-current {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  .target-pending {
+    font-size: 15px;
+    color: var(--warn);
+    font-weight: 600;
+  }
+  .target-slash { color: var(--dim); font-size: 18px; }
+  .target-goal {
+    font-size: 15px;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .bar {
+    height: 6px;
+    background: var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 999px;
+    transition: width 0.5s;
+  }
+  .bar-fill.pending {
+    background: repeating-linear-gradient(
+      45deg,
+      var(--dim),
+      var(--dim) 4px,
+      var(--border) 4px,
+      var(--border) 8px
+    );
+    width: 100%;
+  }
+  .target-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  /* HIGHLIGHTS */
+  .run {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    align-items: center;
+  }
+  .run-date {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+  }
+  .run-name {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 2px 0 0;
+  }
+  .run-stats {
+    text-align: right;
+    line-height: 1.2;
+  }
+  .run-dist {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  .run-time {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .pr-badge {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 2px 6px;
+    background: var(--accent-dim);
+    color: var(--accent);
+    border-radius: 4px;
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    vertical-align: middle;
+  }
+
+  /* WEEKLY SUMMARY */
+  .summary {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 18px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .summary-stat { text-align: center; }
+  .summary-num {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    display: block;
+  }
+  .summary-lbl {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    margin-top: 4px;
+    display: block;
+  }
+
+  /* FOOTER */
+  footer {
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 11px;
+    color: var(--dim);
+  }
+  footer .updated { color: var(--muted); }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="hello">Tuesday 2 June 2026</p>
+  <h1 class="name">Hybrid Training</h1>
+  <div class="countdown">
+    <div>
+      <span class="label">300kg deadlift</span>
+      <span class="countdown-target">18 August 2027</span>
+    </div>
+    <div>
+      <span class="countdown-days nums" id="countdown">442</span>
+      <span class="countdown-days-unit">days to go</span>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="section-head">
+    <h2 class="section-title">This Week</h2>
+    <span class="section-meta">Baseline testing block</span>
+  </div>
+  <div class="week" id="week"></div>
+</section>
+
+<section>
+  <div class="section-head">
+    <h2 class="section-title">Target Progress</h2>
+    <span class="section-meta">Numbers update post baseline</span>
+  </div>
+  <div id="targets"></div>
+</section>
+
+<section>
+  <div class="section-head">
+    <h2 class="section-title">Recent Highlights</h2>
+    <span class="section-meta">Last 7 days</span>
+  </div>
+  <div class="summary">
+    <div class="summary-stat">
+      <span class="summary-num nums">5</span>
+      <span class="summary-lbl">Runs</span>
+    </div>
+    <div class="summary-stat">
+      <span class="summary-num nums">16.7</span>
+      <span class="summary-lbl">km total</span>
+    </div>
+    <div class="summary-stat">
+      <span class="summary-num nums">23:01</span>
+      <span class="summary-lbl">Best 5k</span>
+    </div>
+  </div>
+  <div id="runs"></div>
+</section>
+
+<footer>
+  <div class="updated">Last refresh: <span id="updated">2 Jun 2026</span></div>
+  <div>v0.1 &middot; Built for the 300kg run</div>
+</footer>
+
+<script>
+  // ====================================================================
+  // DATA  -  Updated through Claude. Edit by hand only if you know what you're doing.
+  // ====================================================================
+  const data = {
+    targetDate: '2027-08-18',
+    lastUpdate: '2026-06-02',
+
+    week: [
+      { date: '2026-06-02', dow: 'Tue', title: 'Leg accessory + coaching', sub: 'Friend session, RPE 7 cap for you', tag: 'lift' },
+      { date: '2026-06-03', dow: 'Wed', title: 'Easy Z2 run', sub: '30-40 min, conversational pace', tag: 'run' },
+      { date: '2026-06-04', dow: 'Thu', title: 'Bench 3RM test', sub: 'Warmup ramp + 3RM + accessories', tag: 'test' },
+      { date: '2026-06-05', dow: 'Fri', title: 'Rest', sub: 'Optional mobility', tag: 'rest' },
+      { date: '2026-06-06', dow: 'Sat', title: '5km time trial', sub: 'Outdoor, fresh legs, all-out', tag: 'test' },
+      { date: '2026-06-07', dow: 'Sun', title: 'Rest', sub: 'True rest before DL day', tag: 'rest' },
+      { date: '2026-06-08', dow: 'Mon', title: 'Deadlift 3RM test', sub: 'Warmup ramp + 3RM + accessories', tag: 'test' }
+    ],
+
+    targets: [
+      {
+        name: '300kg Deadlift',
+        deadline: '18 Aug 2027',
+        current: null,
+        currentLabel: 'Test 8 Jun',
+        goal: 300,
+        unit: 'kg',
+        oldPB: 275,
+        higherIsBetter: true
+      },
+      {
+        name: '180kg Bench',
+        deadline: '18 Aug 2027',
+        current: null,
+        currentLabel: 'Test 4 Jun',
+        goal: 180,
+        unit: 'kg',
+        oldPB: 165,
+        higherIsBetter: true
+      },
+      {
+        name: 'Sub-60 Hyrox',
+        deadline: 'Jan/Feb 2027',
+        current: null,
+        currentLabel: 'Race day',
+        goal: 60,
+        unit: 'min',
+        higherIsBetter: false
+      },
+      {
+        name: '20:00 5k',
+        deadline: 'Ongoing',
+        current: 23.0167,
+        currentLabel: '23:01',
+        goal: 20,
+        unit: 'min',
+        baseline: 25,
+        higherIsBetter: false
+      }
+    ],
+
+    runs: [
+      { date: '2026-06-01', name: 'Christchurch Running', distKm: 3.01, durationSec: 890, isPR: false },
+      { date: '2026-05-31', name: 'Treadmill Running', distKm: 5.97, durationSec: 2030, isPR: false },
+      { date: '2026-05-30', name: 'Christchurch Running', distKm: 2.74, durationSec: 1249, isPR: false },
+      { date: '2026-05-28', name: 'Christchurch Running', distKm: 2.50, durationSec: 696, isPR: false },
+      { date: '2026-05-13', name: 'Treadmill 5k', distKm: 5.02, durationSec: 1382, isPR: true }
+    ]
+  };
+
+  // ====================================================================
+  // RENDER
+  // ====================================================================
+  const todayISO = new Date().toISOString().slice(0, 10);
+
+  // Days countdown
+  const target = new Date(data.targetDate);
+  const today = new Date(todayISO);
+  const days = Math.max(0, Math.round((target - today) / 86400000));
+  document.getElementById('countdown').textContent = days;
+
+  // Last updated
+  const upd = new Date(data.lastUpdate);
+  document.getElementById('updated').textContent = upd.toLocaleDateString('en-NZ', { day: 'numeric', month: 'short', year: 'numeric' });
+
+  // Week
+  const weekEl = document.getElementById('week');
+  data.week.forEach(d => {
+    const isToday = d.date === todayISO;
+    const dateNum = parseInt(d.date.slice(8, 10), 10);
+    const card = document.createElement('div');
+    card.className = 'day' + (isToday ? ' today' : '') + (d.tag === 'rest' ? ' rest' : '');
+    card.innerHTML = `
+      <div class="day-date">
+        <div class="day-dow">${d.dow}</div>
+        <div class="day-num nums">${dateNum}</div>
+      </div>
+      <div class="day-body">
+        <p class="day-title">${d.title}</p>
+        <p class="day-sub">${d.sub}</p>
+      </div>
+      <span class="day-tag tag-${d.tag}">${d.tag === 'test' ? 'Test' : d.tag === 'run' ? 'Run' : d.tag === 'lift' ? 'Lift' : d.tag === 'rest' ? 'Rest' : 'Mix'}</span>
+    `;
+    weekEl.appendChild(card);
+  });
+
+  // Targets
+  const targetsEl = document.getElementById('targets');
+  data.targets.forEach(t => {
+    let progress = 0;
+    let metaLeft = '';
+    let metaRight = '';
+    let displayCurrent = '';
+    let pending = t.current === null;
+
+    if (!pending) {
+      if (t.higherIsBetter) {
+        const start = t.oldPB || 0;
+        progress = Math.max(0, Math.min(100, ((t.current - start) / (t.goal - start)) * 100));
+        displayCurrent = `${t.current}${t.unit}`;
+        metaLeft = t.oldPB ? `Old PB ${t.oldPB}${t.unit}` : '';
+        metaRight = `${(t.goal - t.current).toFixed(0)}${t.unit} to go`;
+      } else {
+        const start = t.baseline || t.current;
+        progress = Math.max(0, Math.min(100, ((start - t.current) / (start - t.goal)) * 100));
+        displayCurrent = t.currentLabel;
+        const gap = t.current - t.goal;
+        metaLeft = t.baseline ? `Baseline ${t.baseline}:00` : '';
+        const mins = Math.floor(gap);
+        const secs = Math.round((gap - mins) * 60);
+        metaRight = `${mins}:${String(secs).padStart(2, '0')} to drop`;
+      }
+    }
+
+    const card = document.createElement('div');
+    card.className = 'target';
+    card.innerHTML = `
+      <div class="target-head">
+        <p class="target-name">${t.name}</p>
+        <span class="target-deadline">${t.deadline}</span>
+      </div>
+      <div class="target-numbers">
+        ${pending
+          ? `<span class="target-pending">${t.currentLabel}</span>`
+          : `<span class="target-current nums">${displayCurrent}</span>`
+        }
+        <span class="target-slash">/</span>
+        <span class="target-goal nums">${t.unit === 'min' ? '20:00' : t.goal + t.unit}</span>
+      </div>
+      <div class="bar">
+        ${pending
+          ? `<div class="bar-fill pending"></div>`
+          : `<div class="bar-fill" style="width: ${progress}%"></div>`
+        }
+      </div>
+      <div class="target-meta">
+        <span>${metaLeft}</span>
+        <span>${metaRight}</span>
+      </div>
+    `;
+    targetsEl.appendChild(card);
+  });
+
+  // Runs
+  const runsEl = document.getElementById('runs');
+  data.runs.forEach(r => {
+    const d = new Date(r.date);
+    const dateStr = d.toLocaleDateString('en-NZ', { day: 'numeric', month: 'short' });
+    const mins = Math.floor(r.durationSec / 60);
+    const secs = Math.round(r.durationSec % 60);
+    const paceSec = Math.round(r.durationSec / r.distKm);
+    const paceMin = Math.floor(paceSec / 60);
+    const paceRem = paceSec % 60;
+    const card = document.createElement('div');
+    card.className = 'run';
+    card.innerHTML = `
+      <div>
+        <div class="run-date">${dateStr}</div>
+        <p class="run-name">${r.name}${r.isPR ? '<span class="pr-badge">5k PB</span>' : ''}</p>
+      </div>
+      <div class="run-stats">
+        <div class="run-dist nums">${r.distKm.toFixed(2)}<span style="font-size:11px;color:var(--muted);font-weight:600;margin-left:2px;">km</span></div>
+        <div class="run-time nums">${mins}:${String(secs).padStart(2, '0')} &middot; ${paceMin}:${String(paceRem).padStart(2, '0')}/km</div>
+      </div>
+    `;
+    runsEl.appendChild(card);
+  });
+</script>
+
+</body>
+</html>
