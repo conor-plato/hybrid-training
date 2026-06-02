@@ -172,6 +172,50 @@
     display: block;
   }
 
+  /* PLAN LINK CARD */
+  .plan-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-top: 14px;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    transition: transform 0.15s, background 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .plan-link:active { transform: scale(0.985); background: var(--card-hi); }
+  .plan-link-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .plan-link-icon svg { width: 18px; height: 18px; }
+  .plan-link-body { flex: 1; min-width: 0; }
+  .plan-link-title {
+    font-size: 14px;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  .plan-link-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin: 2px 0 0;
+    font-weight: 600;
+  }
+  .plan-link-chev { color: var(--dim); }
+  .plan-link-chev svg { width: 16px; height: 16px; display: block; }
+
   /* TARGET RING ROW */
   .ring-row {
     display: grid;
@@ -838,6 +882,12 @@
       <circle cx="12" cy="12" r="9"/>
       <path d="M12 7v5l3 2"/>
     </symbol>
+    <symbol id="i-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+      <polyline points="14 3 14 9 20 9"/>
+      <line x1="8" y1="13" x2="16" y2="13"/>
+      <line x1="8" y1="17" x2="14" y2="17"/>
+    </symbol>
   </defs>
 </svg>
 
@@ -864,6 +914,18 @@
       <span class="countdown-unit">days out</span>
     </div>
   </div>
+  <a class="plan-link" href="plan.html">
+    <div class="plan-link-icon">
+      <svg><use href="#i-doc"/></svg>
+    </div>
+    <div class="plan-link-body">
+      <p class="plan-link-title">Full Programme</p>
+      <p class="plan-link-sub">14 months · 6 blocks · The roadmap to 18 Aug</p>
+    </div>
+    <div class="plan-link-chev">
+      <svg><use href="#i-chev"/></svg>
+    </div>
+  </a>
 </div>
 
 <!-- TARGET RINGS (moved up) -->
@@ -892,7 +954,7 @@
 
 <footer>
   <div class="updated">Last refresh: <span id="updated">2 Jun 2026</span></div>
-  <div class="version">v0.3 &middot; Built for the 300kg run</div>
+  <div class="version">v0.4 &middot; Built for the 300kg run</div>
 </footer>
 
 <!-- BOTTOM SHEET MODAL -->
