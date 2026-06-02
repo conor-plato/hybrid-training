@@ -57,6 +57,7 @@
     padding: calc(16px + var(--safe-top)) 16px calc(40px + var(--safe-bottom));
     background: radial-gradient(ellipse at top, rgba(252, 76, 2, 0.06), transparent 50%), var(--bg);
   }
+  body.modal-open { overflow: hidden; }
   .nums { font-variant-numeric: tabular-nums; }
   .label {
     text-transform: uppercase;
@@ -65,9 +66,10 @@
     color: var(--muted);
     font-weight: 700;
   }
+  button { font-family: inherit; }
 
   /* HERO */
-  .hero { margin-bottom: 24px; }
+  .hero { margin-bottom: 20px; }
   .hero-top {
     display: flex;
     justify-content: space-between;
@@ -170,6 +172,82 @@
     display: block;
   }
 
+  /* TARGET RING ROW */
+  .ring-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin: 16px 0 26px;
+  }
+  .ring-card {
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: 14px;
+    padding: 12px 6px 10px;
+    text-align: center;
+    position: relative;
+  }
+  .ring-wrap {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 6px;
+  }
+  .ring-wrap svg {
+    width: 60px;
+    height: 60px;
+    transform: rotate(-90deg);
+  }
+  .ring-bg { stroke: var(--border); fill: none; stroke-width: 4; }
+  .ring-fg { fill: none; stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 0.7s ease-out; }
+  .ring-fg.pending {
+    stroke: var(--dim);
+    stroke-dasharray: 3 3;
+  }
+  .ring-fg.lift { stroke: var(--lift); filter: drop-shadow(0 0 4px var(--lift-soft)); }
+  .ring-fg.test { stroke: var(--accent); filter: drop-shadow(0 0 4px var(--accent-soft)); }
+  .ring-fg.run { stroke: var(--run); filter: drop-shadow(0 0 4px var(--run-soft)); }
+  .ring-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+  .ring-center .icon {
+    width: 18px; height: 18px;
+    color: var(--muted);
+  }
+  .ring-center.has-value .icon { display: none; }
+  .ring-val {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .ring-pending {
+    font-size: 9px;
+    color: var(--gold);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .ring-label {
+    font-size: 9px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    margin-top: 2px;
+  }
+  .ring-goal {
+    font-size: 13px;
+    font-weight: 800;
+    margin-top: 1px;
+    letter-spacing: -0.01em;
+  }
+
   /* SECTION */
   section { margin-bottom: 26px; }
   .section-head {
@@ -207,7 +285,10 @@
     padding: 10px 4px 8px;
     text-align: center;
     position: relative;
+    cursor: pointer;
+    transition: transform 0.15s, background 0.15s;
   }
+  .strip-day:active { transform: scale(0.96); background: var(--card-hi); }
   .strip-day.today {
     background: var(--card-hi);
     border-color: var(--accent);
@@ -254,7 +335,10 @@
     margin-bottom: 16px;
     position: relative;
     overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.15s;
   }
+  .today-card:active { transform: scale(0.985); }
   .today-card::before {
     content: '';
     position: absolute;
@@ -314,6 +398,12 @@
     margin: 4px 0 0;
     font-weight: 500;
   }
+  .today-chev {
+    margin-left: 8px;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+  .today-chev svg { width: 16px; height: 16px; display: block; }
 
   /* UPCOMING DAYS */
   .upcoming { display: grid; gap: 8px; }
@@ -321,12 +411,15 @@
     background: var(--card);
     border: 1px solid var(--border-soft);
     border-radius: 12px;
-    padding: 14px 16px;
+    padding: 14px 14px;
     display: grid;
-    grid-template-columns: 40px 36px 1fr auto;
+    grid-template-columns: 36px 36px 1fr auto auto;
     align-items: center;
     gap: 12px;
+    cursor: pointer;
+    transition: transform 0.15s, background 0.15s;
   }
+  .upcoming-day:active { transform: scale(0.985); background: var(--card-hi); }
   .upcoming-day.rest { opacity: 0.6; }
   .up-date {
     text-align: center;
@@ -376,6 +469,8 @@
     padding: 4px 8px;
     border-radius: 6px;
   }
+  .up-chev { color: var(--dim); }
+  .up-chev svg { width: 14px; height: 14px; display: block; }
 
   /* TAG COLORS */
   .bg-run, .tag-run-bg { background: var(--run-soft); color: var(--run); }
@@ -502,115 +597,190 @@
     margin-top: 4px;
   }
 
-  /* TARGETS */
-  .target {
-    background: var(--card);
-    border: 1px solid var(--border-soft);
-    border-radius: 14px;
-    padding: 16px 18px;
-    margin-bottom: 10px;
+  /* ============================
+     BOTTOM SHEET MODAL (iOS-style)
+     ============================ */
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease-out;
+    z-index: 100;
   }
-  .target-head {
+  .backdrop.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .sheet {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    background: var(--bg-elev);
+    border-top: 1px solid var(--border);
+    border-radius: 24px 24px 0 0;
+    box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.5);
+    max-width: 520px;
+    margin: 0 auto;
+    max-height: 90vh;
+    overflow: hidden;
+    transform: translateY(100%);
+    transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+    z-index: 101;
+    display: flex;
+    flex-direction: column;
+    touch-action: none;
+  }
+  .sheet.open { transform: translateY(0); }
+  .sheet-handle {
+    flex-shrink: 0;
+    padding: 10px 0 8px;
+    display: flex;
+    justify-content: center;
+    cursor: grab;
+  }
+  .sheet-handle::before {
+    content: '';
+    width: 38px; height: 5px;
+    background: var(--dim);
+    border-radius: 999px;
+  }
+  .sheet-head {
+    flex-shrink: 0;
+    padding: 4px 24px 16px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 8px;
-    gap: 10px;
+    gap: 12px;
+    border-bottom: 1px solid var(--border-soft);
   }
-  .target-name-wrap {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-width: 0;
+  .sheet-head-text { min-width: 0; }
+  .sheet-eyebrow {
+    font-size: 11px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-weight: 800;
+    margin-bottom: 2px;
   }
-  .target-icon {
-    width: 30px; height: 30px;
-    border-radius: 8px;
+  .sheet-title {
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    margin: 0;
+    line-height: 1.15;
+  }
+  .sheet-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin: 4px 0 0;
+    font-weight: 500;
+  }
+  .sheet-close {
+    width: 32px; height: 32px;
+    border-radius: 999px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--muted);
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
     flex-shrink: 0;
+    padding: 0;
+    transition: background 0.15s;
   }
-  .target-icon svg { width: 16px; height: 16px; }
-  .target-name {
-    font-size: 14px;
-    font-weight: 800;
-    margin: 0;
-    letter-spacing: -0.01em;
+  .sheet-close:active { background: var(--card-hi); }
+  .sheet-close svg { width: 14px; height: 14px; }
+  .sheet-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px calc(32px + var(--safe-bottom));
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
   }
-  .target-deadline {
-    font-size: 10px;
-    color: var(--muted);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    white-space: nowrap;
-  }
-  .target-numbers {
+
+  /* Programme blocks inside sheet */
+  .block { margin-bottom: 22px; }
+  .block:last-child { margin-bottom: 0; }
+  .block-head {
     display: flex;
     align-items: baseline;
-    gap: 6px;
-    margin: 10px 0;
+    justify-content: space-between;
+    margin-bottom: 10px;
   }
-  .target-current {
-    font-size: 26px;
-    font-weight: 900;
-    letter-spacing: -0.03em;
-    line-height: 1;
-  }
-  .target-pending {
-    font-size: 15px;
-    color: var(--gold);
+  .block-title {
+    font-size: 12px;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.14em;
+    margin: 0;
+    color: var(--text);
   }
-  .target-slash {
-    color: var(--dim);
-    font-size: 18px;
-    margin: 0 2px;
-  }
-  .target-goal {
-    font-size: 15px;
-    color: var(--muted);
-    font-weight: 700;
-  }
-  .bar {
-    height: 7px;
-    background: var(--border);
-    border-radius: 999px;
-    overflow: hidden;
-    position: relative;
-  }
-  .bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent), var(--accent-hi));
-    border-radius: 999px;
-    transition: width 0.6s ease-out;
-    box-shadow: 0 0 12px var(--accent-glow);
-  }
-  .bar-fill.pending {
-    background: repeating-linear-gradient(
-      45deg,
-      var(--border),
-      var(--border) 5px,
-      var(--card-hi) 5px,
-      var(--card-hi) 10px
-    );
-    width: 100%;
-    box-shadow: none;
-  }
-  .target-meta {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 8px;
+  .block-meta {
     font-size: 10px;
     color: var(--muted);
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
   }
-  .target-meta span:last-child { color: var(--text); }
+  .move {
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 6px;
+  }
+  .move:last-child { margin-bottom: 0; }
+  .move-name {
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+  }
+  .move-spec {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .move-spec .chip {
+    background: var(--bg-elev);
+    border: 1px solid var(--border-soft);
+    color: var(--text);
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .move-note {
+    font-size: 12px;
+    color: var(--muted);
+    margin: 6px 0 0;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+  .notes-card {
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-top: 16px;
+    border-left: 3px solid var(--accent);
+  }
+  .notes-card .label { margin-bottom: 4px; display: block; }
+  .notes-card p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text);
+    font-weight: 500;
+  }
 
   /* FOOTER */
   footer {
@@ -658,16 +828,15 @@
     <symbol id="i-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
       <path d="M3 18l5-12 3 8 3-5 4 9"/>
     </symbol>
-    <symbol id="i-target-strength" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M6 4v16M18 4v16M4 12h16M6 8h12M6 16h12"/>
+    <symbol id="i-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 6l6 6-6 6"/>
     </symbol>
-    <symbol id="i-target-race" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="8" r="3"/>
-      <path d="M9 22l3-7 3 7M12 11v4"/>
+    <symbol id="i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 6l12 12M18 6l-12 12"/>
     </symbol>
-    <symbol id="i-target-speed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="14" r="7"/>
-      <path d="M12 14l3-4M9 4h6"/>
+    <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="9"/>
+      <path d="M12 7v5l3 2"/>
     </symbol>
   </defs>
 </svg>
@@ -697,11 +866,14 @@
   </div>
 </div>
 
+<!-- TARGET RINGS (moved up) -->
+<div class="ring-row" id="ring-row"></div>
+
 <!-- THIS WEEK -->
 <section>
   <div class="section-head">
     <h2 class="section-title">This Week</h2>
-    <span class="section-meta" id="week-meta">Baseline Block</span>
+    <span class="section-meta" id="week-meta">Tap a day for the full programme</span>
   </div>
   <div class="week-strip" id="week-strip"></div>
   <div id="today-card-wrap"></div>
@@ -718,19 +890,27 @@
   <div id="activities"></div>
 </section>
 
-<!-- TARGET PROGRESS -->
-<section>
-  <div class="section-head">
-    <h2 class="section-title">Target Progress</h2>
-    <span class="section-meta">4 goals tracking</span>
-  </div>
-  <div id="targets"></div>
-</section>
-
 <footer>
   <div class="updated">Last refresh: <span id="updated">2 Jun 2026</span></div>
-  <div class="version">v0.2 &middot; Built for the 300kg run</div>
+  <div class="version">v0.3 &middot; Built for the 300kg run</div>
 </footer>
+
+<!-- BOTTOM SHEET MODAL -->
+<div class="backdrop" id="backdrop"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+  <div class="sheet-handle" id="sheet-handle"></div>
+  <div class="sheet-head">
+    <div class="sheet-head-text">
+      <div class="sheet-eyebrow" id="sheet-eyebrow">Tuesday 2 Jun</div>
+      <h2 class="sheet-title" id="sheet-title">Today's Session</h2>
+      <p class="sheet-sub" id="sheet-sub"></p>
+    </div>
+    <button class="sheet-close" id="sheet-close" aria-label="Close">
+      <svg><use href="#i-close"/></svg>
+    </button>
+  </div>
+  <div class="sheet-body" id="sheet-body"></div>
+</div>
 
 <script>
   // ====================================================================
@@ -743,62 +923,258 @@
     weekMeta: 'Baseline Block',
 
     week: [
-      { date: '2026-06-02', dow: 'Tue', title: 'Leg accessory + coaching', sub: 'Friend session, RPE 7 cap', tag: 'lift' },
-      { date: '2026-06-03', dow: 'Wed', title: 'Easy Z2 run', sub: '30-40 min, conversational', tag: 'run' },
-      { date: '2026-06-04', dow: 'Thu', title: 'Bench 3RM test', sub: 'Warmup ramp + 3RM + accessories', tag: 'test' },
-      { date: '2026-06-05', dow: 'Fri', title: 'Rest', sub: 'Optional mobility', tag: 'rest' },
-      { date: '2026-06-06', dow: 'Sat', title: '5km time trial', sub: 'Outdoor, fresh legs, all-out', tag: 'test' },
-      { date: '2026-06-07', dow: 'Sun', title: 'Rest', sub: 'True rest before DL day', tag: 'rest' },
-      { date: '2026-06-08', dow: 'Mon', title: 'Deadlift 3RM test', sub: 'Warmup ramp + 3RM + accessories', tag: 'test' }
+      {
+        date: '2026-06-02', dow: 'Tue',
+        title: 'Leg accessory + coaching',
+        sub: 'Friend session, RPE 7 cap',
+        tag: 'lift',
+        details: {
+          duration: '60-75 min',
+          blocks: [
+            {
+              heading: 'Warmup',
+              items: [
+                { move: 'Easy bike or row', detail: '5-10 min' },
+                { move: 'Hip + ankle mobility', detail: 'Couch stretch, 90/90, ankle rocks' }
+              ]
+            },
+            {
+              heading: 'Main',
+              items: [
+                { move: 'Goblet squat or leg press', sets: '3-4', reps: '8-12', load: 'RPE 7' },
+                { move: 'Romanian deadlift', sets: '3', reps: '8', load: 'Light-moderate' },
+                { move: 'Walking lunges', sets: '2-3', reps: '10/leg' }
+              ]
+            },
+            {
+              heading: 'Accessory',
+              items: [
+                { move: 'Leg curl', sets: '2', reps: '12-15' },
+                { move: 'Leg extension', sets: '2', reps: '12-15' },
+                { move: 'Standing calves', sets: '3', reps: '12-15' },
+                { move: 'Abs (any)', sets: '2-3' }
+              ]
+            }
+          ],
+          notes: "RPE 7 ceiling on everything. You're coaching, the session is theirs. If anything feels surprisingly hard, cap it earlier. Don't trash legs - we have a test week to get through."
+        }
+      },
+      {
+        date: '2026-06-03', dow: 'Wed',
+        title: 'Easy Z2 run',
+        sub: '30-40 min, conversational',
+        tag: 'run',
+        details: {
+          duration: '40-55 min',
+          blocks: [
+            {
+              heading: 'Warmup',
+              items: [
+                { move: 'Brisk walk', detail: '5 min' },
+                { move: 'Easy jog', detail: '2 min' }
+              ]
+            },
+            {
+              heading: 'Main',
+              items: [
+                { move: 'Z2 run', detail: '30-40 min', load: 'Conversational' }
+              ]
+            },
+            {
+              heading: 'Cooldown',
+              items: [
+                { move: 'Walk', detail: '5 min' },
+                { move: 'Mobility', detail: '10-15 min, hips/T-spine/ankles' }
+              ]
+            }
+          ],
+          notes: 'Talk in full sentences. If you can\'t, you\'re too fast. Log distance, total time, average HR. This is the running baseline.'
+        }
+      },
+      {
+        date: '2026-06-04', dow: 'Thu',
+        title: 'Bench 3RM test',
+        sub: 'Warmup ramp + 3RM + accessories',
+        tag: 'test',
+        details: {
+          duration: '60-75 min',
+          blocks: [
+            {
+              heading: 'Warmup ramp',
+              items: [
+                { move: 'Empty bar', sets: '1', reps: '10' },
+                { move: 'Bench', sets: '1', reps: '5', load: '60kg' },
+                { move: 'Bench', sets: '1', reps: '5', load: '80kg' },
+                { move: 'Bench', sets: '1', reps: '3', load: '100kg' },
+                { move: 'Bench', sets: '1', reps: '2', load: '120kg if accessible' }
+              ]
+            },
+            {
+              heading: 'Test',
+              items: [
+                { move: 'Bench 3RM', detail: '5-10kg jumps to a clean 3RM. Hard stop on form break.' }
+              ]
+            },
+            {
+              heading: 'Volume',
+              items: [
+                { move: 'Bench', sets: '2', reps: '8', load: '~70% of 3RM' }
+              ]
+            },
+            {
+              heading: 'Accessory',
+              items: [
+                { move: 'Triceps (close grip or pushdowns)', sets: '3', reps: '10-12' },
+                { move: 'Rear delts', sets: '2-3', reps: '12' },
+                { move: 'Side delts', sets: '2', reps: '12' }
+              ]
+            }
+          ],
+          notes: 'Estimated 1RM = 3RM ÷ 0.92. Detrained pressing is the most injury-prone lift to push cold - be conservative.'
+        }
+      },
+      {
+        date: '2026-06-05', dow: 'Fri',
+        title: 'Rest',
+        sub: 'Optional mobility',
+        tag: 'rest',
+        details: {
+          duration: 'As needed',
+          blocks: [
+            {
+              heading: 'Optional',
+              items: [
+                { move: 'Easy walk', detail: '20-30 min' },
+                { move: 'Stretch / mobility', detail: 'Anything that\'s stiff' }
+              ]
+            }
+          ],
+          notes: 'Sleep, eat, hydrate. Big day Saturday.'
+        }
+      },
+      {
+        date: '2026-06-06', dow: 'Sat',
+        title: '5km time trial',
+        sub: 'Outdoor, fresh legs, all-out',
+        tag: 'test',
+        details: {
+          duration: '35-45 min',
+          blocks: [
+            {
+              heading: 'Warmup',
+              items: [
+                { move: 'Easy jog', detail: '10 min' },
+                { move: 'Strides at goal pace', sets: '3-4', detail: '20-30 sec each' }
+              ]
+            },
+            {
+              heading: 'Time trial',
+              items: [
+                { move: '5km hard effort', detail: 'Outdoor flat route ideally', load: 'All-out' }
+              ]
+            },
+            {
+              heading: 'Cooldown',
+              items: [
+                { move: 'Easy walk or jog', detail: '5-10 min' }
+              ]
+            }
+          ],
+          notes: 'Start 5-10 sec/km slower than you think you can hold. Settle into rhythm by km 2. Lift the last km. Don\'t blow up before halfway. Log: total time, km splits, max + avg HR.'
+        }
+      },
+      {
+        date: '2026-06-07', dow: 'Sun',
+        title: 'Rest',
+        sub: 'True rest before DL day',
+        tag: 'rest',
+        details: {
+          duration: 'Optional walk',
+          blocks: [
+            {
+              heading: 'Optional',
+              items: [
+                { move: 'Easy walk', detail: 'If you want fresh air' }
+              ]
+            }
+          ],
+          notes: 'True rest day. Tomorrow is the big one. Sleep in.'
+        }
+      },
+      {
+        date: '2026-06-08', dow: 'Mon',
+        title: 'Deadlift 3RM test',
+        sub: 'Warmup ramp + 3RM + accessories',
+        tag: 'test',
+        details: {
+          duration: '70-90 min',
+          blocks: [
+            {
+              heading: 'Warmup ramp',
+              items: [
+                { move: 'Empty bar RDLs', sets: '1', reps: '10' },
+                { move: 'Deadlift', sets: '1', reps: '5', load: '60kg' },
+                { move: 'Deadlift', sets: '1', reps: '5', load: '100kg' },
+                { move: 'Deadlift', sets: '1', reps: '3', load: '140kg' },
+                { move: 'Deadlift', sets: '1', reps: '2', load: '180kg if accessible' }
+              ]
+            },
+            {
+              heading: 'Test',
+              items: [
+                { move: 'Deadlift 3RM', detail: '10-15kg jumps to a clean 3RM. Hard stop on form break.' }
+              ]
+            },
+            {
+              heading: 'Volume',
+              items: [
+                { move: 'Deadlift', sets: '2', reps: '6', load: '~70% of 3RM' }
+              ]
+            },
+            {
+              heading: 'Accessory',
+              items: [
+                { move: 'Rows (barbell or DB)', sets: '3', reps: '8-10' },
+                { move: 'Lat pulldowns or pullups', sets: '3', reps: '8-10' },
+                { move: 'Abs (any)', sets: '2-3' }
+              ]
+            }
+          ],
+          notes: 'The headline number for the year. Be honest, don\'t ego-pull. Estimated 1RM = 3RM ÷ 0.92. If old PB was 275kg, today\'s 3RM might land anywhere from 140 to 220kg.'
+        }
+      }
     ],
 
     targets: [
       {
-        name: '300kg Deadlift',
-        icon: 'i-target-strength',
-        iconColor: 'lift',
+        name: 'Deadlift', shortLabel: 'DL', icon: 'i-lift', iconColor: 'lift',
         deadline: '18 Aug 2027',
-        current: null,
-        currentLabel: 'Test 8 Jun',
-        goal: 300,
-        unit: 'kg',
-        oldPB: 275,
+        current: null, currentLabel: 'TBD',
+        goal: 300, unit: 'kg', oldPB: 275,
         higherIsBetter: true
       },
       {
-        name: '180kg Bench',
-        icon: 'i-target-strength',
-        iconColor: 'lift',
+        name: 'Bench', shortLabel: 'Bench', icon: 'i-lift', iconColor: 'lift',
         deadline: '18 Aug 2027',
-        current: null,
-        currentLabel: 'Test 4 Jun',
-        goal: 180,
-        unit: 'kg',
-        oldPB: 165,
+        current: null, currentLabel: 'TBD',
+        goal: 180, unit: 'kg', oldPB: 165,
         higherIsBetter: true
       },
       {
-        name: 'Sub-60 Hyrox',
-        icon: 'i-target-race',
-        iconColor: 'test',
+        name: 'Hyrox', shortLabel: 'Hyrox', icon: 'i-test', iconColor: 'test',
         deadline: 'Jan/Feb 2027',
-        current: null,
-        currentLabel: 'Race day',
-        goal: 60,
-        unit: 'min',
-        higherIsBetter: false
+        current: null, currentLabel: 'TBD',
+        goal: 60, unit: 'min',
+        higherIsBetter: false,
+        goalDisplay: '<60'
       },
       {
-        name: '20:00 5k',
-        icon: 'i-target-speed',
-        iconColor: 'run',
+        name: '5k', shortLabel: '5k', icon: 'i-run', iconColor: 'run',
         deadline: 'Ongoing',
-        current: 23.0167,
-        currentLabel: '23:01',
-        goal: 20,
-        unit: 'min',
-        baseline: 25,
-        higherIsBetter: false
+        current: 23.0167, currentLabel: '23:01',
+        goal: 20, unit: 'min', baseline: 25,
+        higherIsBetter: false,
+        goalDisplay: '20:00'
       }
     ],
 
@@ -831,10 +1207,6 @@
     const p = Math.round(sec / km);
     return `${Math.floor(p / 60)}:${pad(p % 60)}`;
   }
-  function fmtDateShort(iso) {
-    const d = new Date(iso);
-    return d.toLocaleDateString('en-NZ', { weekday: 'short', day: 'numeric', month: 'short' });
-  }
   function fmtDateRel(iso) {
     const d = new Date(iso);
     const today = new Date(new Date().toISOString().slice(0, 10));
@@ -843,6 +1215,10 @@
     if (diff === 1) return 'Yesterday';
     if (diff < 7) return d.toLocaleDateString('en-NZ', { weekday: 'long' });
     return d.toLocaleDateString('en-NZ', { weekday: 'short', day: 'numeric', month: 'short' });
+  }
+  function fmtDateFull(iso) {
+    const d = new Date(iso);
+    return d.toLocaleDateString('en-NZ', { weekday: 'long', day: 'numeric', month: 'short' });
   }
   function tagLabel(tag) {
     return { run: 'Run', lift: 'Lift', test: 'Test', rest: 'Rest' }[tag] || tag;
@@ -859,9 +1235,8 @@
   // Hero
   document.getElementById('hero-date').textContent = new Date(todayISO).toLocaleDateString('en-NZ', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
   document.getElementById('week-title').textContent = data.weekTitle;
-  document.getElementById('week-meta').textContent = data.weekMeta;
 
-  // Countdown
+  // Countdown + day-of
   const target = new Date(data.targetDate);
   const today = new Date(todayISO);
   const totalDays = Math.round((target - new Date('2026-06-02')) / 86400000);
@@ -869,11 +1244,9 @@
   const dayOf = Math.max(1, totalDays - daysLeft + 1);
   document.getElementById('countdown').textContent = daysLeft;
 
-  // Week sub line - get first and last date of the current week from data
-  const wkStart = data.week[0].date;
-  const wkEnd = data.week[data.week.length - 1].date;
-  const wkStartD = new Date(wkStart);
-  const wkEndD = new Date(wkEnd);
+  // Week sub line
+  const wkStartD = new Date(data.week[0].date);
+  const wkEndD = new Date(data.week[data.week.length - 1].date);
   const wkRange = `${wkStartD.getDate()}-${wkEndD.getDate()} ${wkEndD.toLocaleDateString('en-NZ', { month: 'long', year: 'numeric' })}`;
   document.getElementById('week-sub').innerHTML = `${wkRange} &middot; <span>Day ${dayOf} of ${totalDays}</span>`;
 
@@ -881,9 +1254,54 @@
   const upd = new Date(data.lastUpdate);
   document.getElementById('updated').textContent = upd.toLocaleDateString('en-NZ', { day: 'numeric', month: 'short', year: 'numeric' });
 
-  // WEEK STRIP
+  // TARGET RINGS
+  const ringRow = document.getElementById('ring-row');
+  const RING_R = 26;
+  const RING_C = 2 * Math.PI * RING_R;
+  data.targets.forEach(t => {
+    let progress = 0;
+    let centerHtml = '';
+    let pending = t.current === null;
+
+    if (!pending) {
+      if (t.higherIsBetter) {
+        const start = t.oldPB || 0;
+        progress = Math.max(0, Math.min(1, (t.current - start) / (t.goal - start)));
+      } else {
+        const start = t.baseline || t.current;
+        progress = Math.max(0, Math.min(1, (start - t.current) / (start - t.goal)));
+      }
+      centerHtml = `<div class="ring-val nums">${t.currentLabel}</div>`;
+    } else {
+      centerHtml = `<div class="ring-pending">TBD</div>`;
+    }
+
+    const offset = RING_C * (1 - progress);
+    const goalDisplay = t.goalDisplay || `${t.goal}${t.unit}`;
+
+    const cell = document.createElement('div');
+    cell.className = 'ring-card';
+    cell.innerHTML = `
+      <div class="ring-wrap">
+        <svg viewBox="0 0 60 60">
+          <circle class="ring-bg" cx="30" cy="30" r="${RING_R}"/>
+          <circle class="ring-fg ${pending ? 'pending' : t.iconColor}" cx="30" cy="30" r="${RING_R}"
+                  stroke-dasharray="${RING_C.toFixed(2)}"
+                  stroke-dashoffset="${pending ? 0 : offset.toFixed(2)}"/>
+        </svg>
+        <div class="ring-center ${pending ? '' : 'has-value'}">
+          ${centerHtml}
+        </div>
+      </div>
+      <div class="ring-label">${t.shortLabel}</div>
+      <div class="ring-goal nums">${goalDisplay}</div>
+    `;
+    ringRow.appendChild(cell);
+  });
+
+  // WEEK STRIP (tappable)
   const stripEl = document.getElementById('week-strip');
-  data.week.forEach(d => {
+  data.week.forEach((d, i) => {
     const isToday = d.date === todayISO;
     const dateNum = parseInt(d.date.slice(8, 10), 10);
     const div = document.createElement('div');
@@ -893,10 +1311,11 @@
       <div class="strip-num nums">${dateNum}</div>
       <div class="strip-dot dot-${d.tag}"></div>
     `;
+    div.addEventListener('click', () => openSheet(i));
     stripEl.appendChild(div);
   });
 
-  // TODAY CARD + UPCOMING
+  // TODAY CARD + UPCOMING (both tappable)
   const todayCardWrap = document.getElementById('today-card-wrap');
   const upcomingEl = document.getElementById('upcoming');
   const todayIdx = data.week.findIndex(d => d.date === todayISO);
@@ -918,15 +1337,19 @@
           <p class="today-title">${t.title}</p>
           <p class="today-sub">${t.sub}</p>
         </div>
+        <div class="today-chev">
+          <svg><use href="#i-chev"/></svg>
+        </div>
       </div>
     `;
+    card.addEventListener('click', () => openSheet(todayIdx));
     todayCardWrap.appendChild(card);
   }
 
   data.week.forEach((d, i) => {
     if (i === todayIdx) return;
     const isPast = new Date(d.date) < today;
-    if (isPast) return; // only show upcoming
+    if (isPast) return;
     const dateNum = parseInt(d.date.slice(8, 10), 10);
     const div = document.createElement('div');
     div.className = 'upcoming-day' + (d.tag === 'rest' ? ' rest' : '');
@@ -943,7 +1366,11 @@
         <p class="up-sub">${d.sub}</p>
       </div>
       <span class="up-tag tag-${d.tag}-bg">${tagLabel(d.tag)}</span>
+      <div class="up-chev">
+        <svg><use href="#i-chev"/></svg>
+      </div>
     `;
+    div.addEventListener('click', () => openSheet(i));
     upcomingEl.appendChild(div);
   });
 
@@ -1004,70 +1431,106 @@
     actEl.appendChild(card);
   });
 
-  // TARGETS
-  const targetsEl = document.getElementById('targets');
-  data.targets.forEach(t => {
-    let progress = 0;
-    let metaLeft = '';
-    let metaRight = '';
-    let displayCurrent = '';
-    let pending = t.current === null;
+  // ====================================================================
+  // BOTTOM SHEET MODAL
+  // ====================================================================
+  const backdrop = document.getElementById('backdrop');
+  const sheet = document.getElementById('sheet');
+  const sheetEyebrow = document.getElementById('sheet-eyebrow');
+  const sheetTitle = document.getElementById('sheet-title');
+  const sheetSub = document.getElementById('sheet-sub');
+  const sheetBody = document.getElementById('sheet-body');
+  const sheetClose = document.getElementById('sheet-close');
+  const sheetHandle = document.getElementById('sheet-handle');
 
-    if (!pending) {
-      if (t.higherIsBetter) {
-        const start = t.oldPB || 0;
-        progress = Math.max(0, Math.min(100, ((t.current - start) / (t.goal - start)) * 100));
-        displayCurrent = `${t.current}${t.unit}`;
-        metaLeft = t.oldPB ? `Old PB ${t.oldPB}${t.unit}` : '';
-        metaRight = `${(t.goal - t.current).toFixed(0)}${t.unit} to go`;
-      } else {
-        const start = t.baseline || t.current;
-        progress = Math.max(0, Math.min(100, ((start - t.current) / (start - t.goal)) * 100));
-        displayCurrent = t.currentLabel;
-        const gap = t.current - t.goal;
-        metaLeft = t.baseline ? `Baseline ${t.baseline}:00` : '';
-        const mins = Math.floor(gap);
-        const secs = Math.round((gap - mins) * 60);
-        metaRight = `${mins}:${pad(secs)} to drop`;
-      }
+  function openSheet(idx) {
+    const d = data.week[idx];
+    if (!d) return;
+
+    sheetEyebrow.textContent = `${fmtDateFull(d.date)}${d.date === todayISO ? ' · Today' : ''}`;
+    sheetTitle.textContent = d.title;
+
+    const subParts = [];
+    if (d.details && d.details.duration) subParts.push(d.details.duration);
+    subParts.push(tagLabel(d.tag));
+    sheetSub.textContent = subParts.join(' · ');
+
+    let html = '';
+    if (d.details && d.details.blocks) {
+      d.details.blocks.forEach(b => {
+        html += `<div class="block">`;
+        html += `<div class="block-head"><h3 class="block-title">${b.heading}</h3>`;
+        if (b.meta) html += `<span class="block-meta">${b.meta}</span>`;
+        html += `</div>`;
+        b.items.forEach(item => {
+          html += `<div class="move">`;
+          html += `<p class="move-name">${item.move}</p>`;
+          const chips = [];
+          if (item.sets) chips.push(`<span class="chip">${item.sets} sets</span>`);
+          if (item.reps) chips.push(`<span class="chip">${item.reps} reps</span>`);
+          if (item.load) chips.push(`<span class="chip">${item.load}</span>`);
+          if (item.detail) chips.push(`<span>${item.detail}</span>`);
+          if (chips.length) html += `<div class="move-spec">${chips.join('')}</div>`;
+          if (item.notes) html += `<p class="move-note">${item.notes}</p>`;
+          html += `</div>`;
+        });
+        html += `</div>`;
+      });
     }
+    if (d.details && d.details.notes) {
+      html += `<div class="notes-card">`;
+      html += `<span class="label">Notes</span>`;
+      html += `<p>${d.details.notes}</p>`;
+      html += `</div>`;
+    }
+    sheetBody.innerHTML = html;
+    sheetBody.scrollTop = 0;
 
-    const goalDisplay = t.unit === 'min'
-      ? (t.name.includes('5k') ? '20:00' : '<60:00')
-      : `${t.goal}${t.unit}`;
+    backdrop.classList.add('open');
+    sheet.classList.add('open');
+    document.body.classList.add('modal-open');
+  }
 
-    const card = document.createElement('div');
-    card.className = 'target';
-    card.innerHTML = `
-      <div class="target-head">
-        <div class="target-name-wrap">
-          <div class="target-icon bg-${t.iconColor}">
-            <svg><use href="#${t.icon}"/></svg>
-          </div>
-          <p class="target-name">${t.name}</p>
-        </div>
-        <span class="target-deadline">${t.deadline}</span>
-      </div>
-      <div class="target-numbers">
-        ${pending
-          ? `<span class="target-pending">${t.currentLabel}</span>`
-          : `<span class="target-current nums">${displayCurrent}</span>`
-        }
-        <span class="target-slash">/</span>
-        <span class="target-goal nums">${goalDisplay}</span>
-      </div>
-      <div class="bar">
-        ${pending
-          ? `<div class="bar-fill pending"></div>`
-          : `<div class="bar-fill" style="width: ${progress}%"></div>`
-        }
-      </div>
-      <div class="target-meta">
-        <span>${metaLeft}</span>
-        <span>${metaRight}</span>
-      </div>
-    `;
-    targetsEl.appendChild(card);
+  function closeSheet() {
+    backdrop.classList.remove('open');
+    sheet.classList.remove('open');
+    document.body.classList.remove('modal-open');
+  }
+
+  backdrop.addEventListener('click', closeSheet);
+  sheetClose.addEventListener('click', closeSheet);
+
+  // Swipe-down on the handle to dismiss
+  let dragStart = null;
+  function onDragStart(e) {
+    dragStart = (e.touches ? e.touches[0].clientY : e.clientY);
+    sheet.style.transition = 'none';
+  }
+  function onDragMove(e) {
+    if (dragStart === null) return;
+    const y = e.touches ? e.touches[0].clientY : e.clientY;
+    const delta = Math.max(0, y - dragStart);
+    sheet.style.transform = `translateY(${delta}px)`;
+  }
+  function onDragEnd(e) {
+    if (dragStart === null) return;
+    const y = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
+    const delta = Math.max(0, y - dragStart);
+    sheet.style.transition = '';
+    sheet.style.transform = '';
+    if (delta > 80) closeSheet();
+    dragStart = null;
+  }
+  sheetHandle.addEventListener('touchstart', onDragStart, { passive: true });
+  sheetHandle.addEventListener('touchmove', onDragMove, { passive: true });
+  sheetHandle.addEventListener('touchend', onDragEnd);
+  sheetHandle.addEventListener('mousedown', onDragStart);
+  document.addEventListener('mousemove', onDragMove);
+  document.addEventListener('mouseup', onDragEnd);
+
+  // ESC to close
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeSheet();
   });
 </script>
 
