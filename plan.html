@@ -420,40 +420,31 @@
   fetch('plan.md')
     .then(r => r.text())
     .then(md => {
-      // Configure marked
-      marked.use({
-        renderer: {
-          // Wrap tables in scrollable container
-          table(token) {
-            const headerRow = token.header.map(c => `<th>${marked.parseInline(c.text)}</th>`).join('');
-            const bodyRows = token.rows.map(row =>
-              '<tr>' + row.map(c => `<td>${marked.parseInline(c.text)}</td>`).join('') + '</tr>'
-            ).join('');
-            return `<div class="table-wrap"><table><thead><tr>${headerRow}</tr></thead><tbody>${bodyRows}</tbody></table></div>`;
-          },
-          // Detect block headings, give them IDs and special class
-          heading(token) {
-            const text = token.text;
-            const level = token.depth;
-            let id = '';
-            let cls = '';
-            const lower = text.toLowerCase();
-            for (const [k, v] of Object.entries(BLOCK_MAP)) {
-              if (lower.startsWith(k)) {
-                id = v;
-                cls = ' class="block-heading"';
-                break;
-              }
-            }
-            const idAttr = id ? ` id="${id}"` : '';
-            return `<h${level}${idAttr}${cls}>${marked.parseInline(text)}</h${level}>`;
+      // Plain parse - simpler and more robust across marked versions
+      const html = marked.parse(md);
+      const content = document.getElementById('content');
+      content.innerHTML = html;
+
+      // Post-process: wrap tables in scrollable containers
+      content.querySelectorAll('table').forEach(t => {
+        const wrap = document.createElement('div');
+        wrap.className = 'table-wrap';
+        t.parentNode.insertBefore(wrap, t);
+        wrap.appendChild(t);
+      });
+
+      // Post-process: tag block headings with IDs and special class
+      content.querySelectorAll('h2').forEach(h => {
+        const text = h.textContent.toLowerCase();
+        for (const [k, v] of Object.entries(BLOCK_MAP)) {
+          if (text.startsWith(k)) {
+            h.id = v;
+            h.classList.add('block-heading');
+            break;
           }
         }
       });
 
-      const html = marked.parse(md);
-      const content = document.getElementById('content');
-      content.innerHTML = html;
       content.style.display = 'block';
       document.getElementById('loading').style.display = 'none';
 
