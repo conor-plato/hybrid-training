@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0A0D11">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Hybrid">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%230A0D11'/%3E%3Cpath d='M55 130 L85 60 L100 100 L115 80 L125 130' stroke='%23FC4C02' stroke-width='12' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E">
+<title>Full Plan · Hybrid Training</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  :root {
+    --bg: #0A0D11;
+    --bg-elev: #0F1318;
+    --card: #15191F;
+    --card-hi: #1A1F27;
+    --border: #232932;
+    --border-soft: #1C2229;
+    --text: #F5F7FA;
+    --muted: #8B95A1;
+    --dim: #4A5260;
+    --accent: #FC4C02;
+    --accent-hi: #FF6B30;
+    --accent-soft: rgba(252, 76, 2, 0.12);
+    --gold: #FFB400;
+    --gold-soft: rgba(255, 180, 0, 0.12);
+    --safe-top: env(safe-area-inset-top);
+    --safe-bottom: env(safe-area-inset-bottom);
+  }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Segoe UI", system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    max-width: 560px;
+    margin: 0 auto;
+    padding-bottom: calc(40px + var(--safe-bottom));
+    background: radial-gradient(ellipse at top, rgba(252, 76, 2, 0.05), transparent 40%), var(--bg);
+  }
+  .nums { font-variant-numeric: tabular-nums; }
+
+  /* TOP BAR */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(10, 13, 17, 0.85);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid var(--border-soft);
+    padding: calc(8px + var(--safe-top)) 16px 8px;
+  }
+  .topbar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 36px;
+  }
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 6px 10px 6px 4px;
+    margin-left: -4px;
+    border-radius: 8px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .back-btn:active { background: var(--card); }
+  .back-btn svg { width: 18px; height: 18px; }
+  .topbar-title {
+    flex: 1;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .topbar-spacer { width: 80px; }
+
+  /* CHIP NAV */
+  .chips {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 10px 16px 12px;
+    margin: 0 -16px;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip {
+    flex-shrink: 0;
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    color: var(--muted);
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .chip:active { transform: scale(0.95); }
+  .chip.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  /* HERO */
+  .plan-hero {
+    padding: 20px 16px 8px;
+  }
+  .plan-eyebrow {
+    font-size: 11px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+  .plan-title {
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    margin: 0;
+  }
+  .plan-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 8px 0 0;
+  }
+
+  /* LOADING */
+  .loading {
+    padding: 60px 16px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .loading-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    margin: 0 3px;
+    animation: pulse 1.4s infinite ease-in-out;
+  }
+  .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes pulse {
+    0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+    40% { opacity: 1; transform: scale(1); }
+  }
+
+  /* RENDERED CONTENT */
+  .content {
+    padding: 12px 16px 0;
+  }
+
+  /* Hide rendered markdown's first H1 (it's the title, we already have a hero) */
+  .content > h1:first-child {
+    display: none;
+  }
+  /* Hide the first paragraph that follows since it's already in the hero sub */
+  .content > h1:first-child + p {
+    font-size: 14px;
+    color: var(--muted);
+    margin: 0 0 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-soft);
+    line-height: 1.6;
+  }
+
+  .content h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--muted);
+    font-weight: 800;
+    margin: 36px 0 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  .content h2.block-heading {
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--text);
+    text-transform: none;
+    letter-spacing: -0.02em;
+    margin-top: 44px;
+    padding: 16px 18px;
+    background: linear-gradient(135deg, var(--card-hi), var(--card));
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .content h2.block-heading::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: var(--accent);
+  }
+
+  .content h3 {
+    font-size: 16px;
+    font-weight: 800;
+    margin: 24px 0 10px;
+    letter-spacing: -0.01em;
+  }
+
+  .content p {
+    margin: 0 0 14px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text);
+  }
+  .content p:last-child { margin-bottom: 0; }
+
+  .content strong {
+    color: var(--text);
+    font-weight: 800;
+  }
+
+  .content ul, .content ol {
+    margin: 0 0 16px;
+    padding-left: 22px;
+  }
+  .content li {
+    margin-bottom: 6px;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .content li strong { color: var(--accent); }
+
+  .content hr {
+    border: none;
+    border-top: 1px solid var(--border-soft);
+    margin: 36px 0;
+  }
+
+  /* TABLES */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 0 -16px 18px;
+    padding: 0 16px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .content table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    min-width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: 12px;
+    overflow: hidden;
+    font-size: 12px;
+  }
+  .content th {
+    background: var(--bg-elev);
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 10px 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .content td {
+    padding: 10px 10px;
+    border-bottom: 1px solid var(--border-soft);
+    font-size: 13px;
+    color: var(--text);
+    vertical-align: top;
+    line-height: 1.4;
+  }
+  .content tr:last-child td { border-bottom: none; }
+  .content td strong, .content th strong { color: var(--accent); }
+  .content td:first-child {
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  /* HOW WE USE THIS DOC list */
+  .content h2 + ol {
+    counter-reset: item;
+    padding-left: 0;
+    list-style: none;
+  }
+  .content h2 + ol li {
+    counter-increment: item;
+    position: relative;
+    padding: 12px 12px 12px 44px;
+    margin-bottom: 8px;
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: 10px;
+    font-size: 14px;
+  }
+  .content h2 + ol li::before {
+    content: counter(item);
+    position: absolute;
+    left: 14px;
+    top: 12px;
+    width: 22px; height: 22px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  /* FOOTER */
+  footer {
+    margin-top: 40px;
+    padding: 20px 16px;
+    text-align: center;
+    font-size: 10px;
+    color: var(--dim);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 600;
+    border-top: 1px solid var(--border-soft);
+  }
+  footer .version { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-chev-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M15 18l-6-6 6-6"/>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-row">
+    <a class="back-btn" href="./">
+      <svg><use href="#i-chev-left"/></svg>
+      Dashboard
+    </a>
+    <div class="topbar-title">Full Plan</div>
+    <div class="topbar-spacer"></div>
+  </div>
+  <div class="chips" id="chips">
+    <button class="chip active" data-target="overview">Overview</button>
+    <button class="chip" data-target="foundation">Foundation</button>
+    <button class="chip" data-target="build">Build</button>
+    <button class="chip" data-target="hyrox">Hyrox</button>
+    <button class="chip" data-target="reset">Reset</button>
+    <button class="chip" data-target="intensification">Intensify</button>
+    <button class="chip" data-target="peaking">Peak</button>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="plan-hero" id="overview-anchor">
+  <div class="plan-eyebrow">14-Month Programme</div>
+  <h1 class="plan-title">Full Plan</h1>
+  <p class="plan-sub">2 June 2026 → 18 August 2027 · 63 weeks · The road to 300kg</p>
+</div>
+
+<!-- LOADING STATE -->
+<div class="loading" id="loading">
+  Loading plan
+  <span class="loading-dot"></span>
+  <span class="loading-dot"></span>
+  <span class="loading-dot"></span>
+</div>
+
+<!-- RENDERED CONTENT -->
+<div class="content" id="content" style="display:none"></div>
+
+<footer>
+  <div class="version">v0.4 &middot; Built for the 300kg run</div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/marked@13.0.0/marked.min.js"></script>
+<script>
+  // Block titles → chip targets (lowercase, dashed)
+  const BLOCK_MAP = {
+    'block 1: foundation': 'foundation',
+    'block 2: build': 'build',
+    'block 3: hyrox peak': 'hyrox',
+    'block 4: hypertrophy reset': 'reset',
+    'block 5: intensification': 'intensification',
+    'block 6: peaking + 300kg attempt': 'peaking'
+  };
+
+  fetch('plan.md')
+    .then(r => r.text())
+    .then(md => {
+      // Configure marked
+      marked.use({
+        renderer: {
+          // Wrap tables in scrollable container
+          table(token) {
+            const headerRow = token.header.map(c => `<th>${marked.parseInline(c.text)}</th>`).join('');
+            const bodyRows = token.rows.map(row =>
+              '<tr>' + row.map(c => `<td>${marked.parseInline(c.text)}</td>`).join('') + '</tr>'
+            ).join('');
+            return `<div class="table-wrap"><table><thead><tr>${headerRow}</tr></thead><tbody>${bodyRows}</tbody></table></div>`;
+          },
+          // Detect block headings, give them IDs and special class
+          heading(token) {
+            const text = token.text;
+            const level = token.depth;
+            let id = '';
+            let cls = '';
+            const lower = text.toLowerCase();
+            for (const [k, v] of Object.entries(BLOCK_MAP)) {
+              if (lower.startsWith(k)) {
+                id = v;
+                cls = ' class="block-heading"';
+                break;
+              }
+            }
+            const idAttr = id ? ` id="${id}"` : '';
+            return `<h${level}${idAttr}${cls}>${marked.parseInline(text)}</h${level}>`;
+          }
+        }
+      });
+
+      const html = marked.parse(md);
+      const content = document.getElementById('content');
+      content.innerHTML = html;
+      content.style.display = 'block';
+      document.getElementById('loading').style.display = 'none';
+
+      // Wire up chips
+      document.querySelectorAll('.chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          const target = chip.dataset.target;
+          let el;
+          if (target === 'overview') {
+            el = document.getElementById('overview-anchor');
+          } else {
+            el = document.getElementById(target);
+          }
+          if (el) {
+            const topbarH = document.querySelector('.topbar').offsetHeight;
+            const y = el.getBoundingClientRect().top + window.scrollY - topbarH - 8;
+            window.scrollTo({ top: y, behavior: 'smooth' });
+          }
+        });
+      });
+
+      // Update active chip on scroll
+      const sections = [
+        { id: 'overview', el: document.getElementById('overview-anchor') },
+        { id: 'foundation', el: document.getElementById('foundation') },
+        { id: 'build', el: document.getElementById('build') },
+        { id: 'hyrox', el: document.getElementById('hyrox') },
+        { id: 'reset', el: document.getElementById('reset') },
+        { id: 'intensification', el: document.getElementById('intensification') },
+        { id: 'peaking', el: document.getElementById('peaking') }
+      ].filter(s => s.el);
+
+      function updateActiveChip() {
+        const topbarH = document.querySelector('.topbar').offsetHeight;
+        const scrollY = window.scrollY + topbarH + 100;
+        let active = 'overview';
+        for (const s of sections) {
+          if (s.el.offsetTop <= scrollY) active = s.id;
+        }
+        document.querySelectorAll('.chip').forEach(c => {
+          c.classList.toggle('active', c.dataset.target === active);
+        });
+      }
+      window.addEventListener('scroll', updateActiveChip, { passive: true });
+      updateActiveChip();
+    })
+    .catch(err => {
+      document.getElementById('loading').innerHTML = `<p style="color:var(--gold)">Failed to load plan. <a href="./" style="color:var(--accent)">Back to dashboard</a></p>`;
+      console.error(err);
+    });
+</script>
+
+</body>
+</html>
