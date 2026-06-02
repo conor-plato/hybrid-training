@@ -1,0 +1,4 @@
+# Never commit auth or local-only files
+.github-token
+.DS_Store
+*.log
