@@ -83,9 +83,13 @@ Two changes from the original sketch:
 - Wed Bench: 5x6 @ ~85kg in Wk 1, climbing to 4x4 @ ~100kg by wk 12
 
 **Accessories (PM, commercial):**
-- 3-4 sets each, 8-15 rep range, RPE 7-9 on the last set
-- 2x weekly frequency for back, chest, shoulders, tris, bis
-- 1x for quads (Tue Legs) with 5-6 movements
+Programmed by muscle group, not by exercise. You pick what to do based on gym setup and feel — just hit the target sets per muscle.
+
+- Tue Legs PM: Quads 6 sets, Hams 3 sets, Glutes 3 sets, Calves 4 sets, Abs 3 sets
+- Thu Pull PM: Mid-back 4, Lats 4, Rear delts 3, Biceps 4, Forearms 2 (optional)
+- Sat Push PM: Chest 6, Triceps 4, Side delts 3, Rear delts 2
+
+Same numbers on the AM compound days for the post-compound accessory blocks. Rep range 8-15 across the board, RPE 7-9 on the last set of each muscle group.
 
 **Running:**
 - Easy + long: Z2 (talk-test). HR cap
