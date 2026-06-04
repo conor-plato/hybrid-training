@@ -954,7 +954,7 @@
 
 <footer>
   <div class="updated">Last refresh: <span id="updated">2 Jun 2026</span></div>
-  <div class="version">v0.4 &middot; Built for the 300kg run</div>
+  <div class="version">v0.5 &middot; Built for the 300kg run</div>
 </footer>
 
 <!-- BOTTOM SHEET MODAL -->
@@ -981,8 +981,8 @@
   const data = {
     targetDate: '2027-08-18',
     lastUpdate: '2026-06-02',
-    weekTitle: 'Week 1 · Baseline',
-    weekMeta: 'Baseline Block',
+    weekTitle: 'Foundation Kickoff',
+    weekMeta: 'New structure starts Thu 4 Jun',
 
     week: [
       {
@@ -1055,118 +1055,102 @@
       },
       {
         date: '2026-06-04', dow: 'Thu',
-        title: 'Bench 3RM test',
-        sub: 'Warmup ramp + 3RM + accessories',
-        tag: 'test',
+        title: 'Easy Run AM + Pull PM',
+        sub: 'New structure begins',
+        tag: 'lift',
         details: {
-          duration: '60-75 min',
+          duration: 'AM 45 min + PM 60-75 min',
           blocks: [
             {
-              heading: 'Warmup ramp',
+              heading: 'AM - Easy Z2 Run (garage / outdoor)',
               items: [
-                { move: 'Empty bar', sets: '1', reps: '10' },
-                { move: 'Bench', sets: '1', reps: '5', load: '60kg' },
-                { move: 'Bench', sets: '1', reps: '5', load: '80kg' },
-                { move: 'Bench', sets: '1', reps: '3', load: '100kg' },
-                { move: 'Bench', sets: '1', reps: '2', load: '120kg if accessible' }
+                { move: 'Warmup walk', detail: '5 min' },
+                { move: 'Z2 run', detail: '35 min, conversational pace' },
+                { move: 'Cooldown walk', detail: '5 min' }
               ]
             },
             {
-              heading: 'Test',
+              heading: 'PM - Pull (commercial, accessory)',
               items: [
-                { move: 'Bench 3RM', detail: '5-10kg jumps to a clean 3RM. Hard stop on form break.' }
-              ]
-            },
-            {
-              heading: 'Volume',
-              items: [
-                { move: 'Bench', sets: '2', reps: '8', load: '~70% of 3RM' }
-              ]
-            },
-            {
-              heading: 'Accessory',
-              items: [
-                { move: 'Triceps (close grip or pushdowns)', sets: '3', reps: '10-12' },
-                { move: 'Rear delts', sets: '2-3', reps: '12' },
-                { move: 'Side delts', sets: '2', reps: '12' }
+                { move: 'Chest-supported row', sets: '3', reps: '10-12', load: 'RPE 8' },
+                { move: 'Lat pulldown (wide grip)', sets: '3', reps: '10-12' },
+                { move: 'Cable row', sets: '3', reps: '12' },
+                { move: 'Face pull', sets: '3', reps: '15' },
+                { move: 'DB or barbell curl', sets: '3', reps: '12' },
+                { move: 'Hammer curl', sets: '2', reps: '12' },
+                { move: 'Rear delt fly', sets: '2', reps: '15' }
               ]
             }
           ],
-          notes: 'Estimated 1RM = 3RM ÷ 0.92. Detrained pressing is the most injury-prone lift to push cold - be conservative.'
+          notes: '6+ hours between AM and PM. Pull accessory is pure hypertrophy, RPE 7-9 on the last set of each. Machines and isolation - heavy compound pulls live Mon AM.'
         }
       },
       {
         date: '2026-06-05', dow: 'Fri',
-        title: 'Rest',
-        sub: 'Optional mobility',
-        tag: 'rest',
+        title: 'Tempo Run',
+        sub: '5 wu + 15 tempo + 5 cd',
+        tag: 'run',
         details: {
-          duration: 'As needed',
+          duration: '25-30 min',
           blocks: [
             {
-              heading: 'Optional',
+              heading: 'Run',
               items: [
-                { move: 'Easy walk', detail: '20-30 min' },
-                { move: 'Stretch / mobility', detail: 'Anything that\'s stiff' }
+                { move: 'Easy warmup jog', detail: '5 min' },
+                { move: 'Tempo at Z4', detail: '15 min comfortably hard (5k pace - 10 sec/km)' },
+                { move: 'Cooldown', detail: '5 min easy' }
               ]
             }
           ],
-          notes: 'Sleep, eat, hydrate. Big day Saturday.'
+          notes: 'Tempo = comfortably hard, short phrases not full sentences. Builds lactate threshold. Foundation Wk 1 starts at 15 min, climbs to 22 min by Wk 4.'
         }
       },
       {
         date: '2026-06-06', dow: 'Sat',
-        title: '5km time trial',
-        sub: 'Outdoor, fresh legs, all-out',
-        tag: 'test',
+        title: 'Push PM (commercial)',
+        sub: '60-75 min chest/tris/shoulders',
+        tag: 'lift',
         details: {
-          duration: '35-45 min',
+          duration: '60-75 min',
           blocks: [
             {
-              heading: 'Warmup',
+              heading: 'Main',
               items: [
-                { move: 'Easy jog', detail: '10 min' },
-                { move: 'Strides at goal pace', sets: '3-4', detail: '20-30 sec each' }
-              ]
-            },
-            {
-              heading: 'Time trial',
-              items: [
-                { move: '5km hard effort', detail: 'Outdoor flat route ideally', load: 'All-out' }
-              ]
-            },
-            {
-              heading: 'Cooldown',
-              items: [
-                { move: 'Easy walk or jog', detail: '5-10 min' }
+                { move: 'Incline DB press', sets: '4', reps: '8-10', load: 'RPE 8' },
+                { move: 'Machine chest press', sets: '3', reps: '10-12' },
+                { move: 'Cable fly', sets: '3', reps: '12-15' },
+                { move: 'Tricep pushdown', sets: '3', reps: '12' },
+                { move: 'Overhead tricep extension', sets: '3', reps: '12' },
+                { move: 'Lateral raise (machine or DB)', sets: '3', reps: '15' },
+                { move: 'Rear delt machine', sets: '3', reps: '15' }
               ]
             }
           ],
-          notes: 'Start 5-10 sec/km slower than you think you can hold. Settle into rhythm by km 2. Lift the last km. Don\'t blow up before halfway. Log: total time, km splits, max + avg HR.'
+          notes: 'Hypertrophy day - machines and isolation to push close to failure safely. Last set of each at RPE 8-9. Heavy bench compound work lives Wed AM.'
         }
       },
       {
         date: '2026-06-07', dow: 'Sun',
-        title: 'Rest',
-        sub: 'True rest before DL day',
-        tag: 'rest',
+        title: 'Long Z2 Run',
+        sub: '50 min continuous',
+        tag: 'run',
         details: {
-          duration: 'Optional walk',
+          duration: '50 min',
           blocks: [
             {
-              heading: 'Optional',
+              heading: 'Run',
               items: [
-                { move: 'Easy walk', detail: 'If you want fresh air' }
+                { move: 'Continuous Z2 run', detail: '50 min, talk-test pace throughout' }
               ]
             }
           ],
-          notes: 'True rest day. Tomorrow is the big one. Sleep in.'
+          notes: 'No formal warmup/cooldown structure - just start easy, settle into Z2, finish strong but not hammered. Foundation Wk 1 starts at 50 min, building to 75-90 min by Wk 12.'
         }
       },
       {
         date: '2026-06-08', dow: 'Mon',
-        title: 'Deadlift 3RM test',
-        sub: 'Warmup ramp + 3RM + accessories',
+        title: 'Pull AM - DL 3RM Test',
+        sub: 'Garage, baseline test + Foundation kickoff',
         tag: 'test',
         details: {
           duration: '70-90 min',
@@ -1218,7 +1202,7 @@
       {
         name: 'Bench', shortLabel: 'Bench', icon: 'i-lift', iconColor: 'lift',
         deadline: '18 Aug 2027',
-        current: null, currentLabel: 'TBD',
+        current: 110, currentLabel: '110kg',
         goal: 180, unit: 'kg', oldPB: 165,
         higherIsBetter: true
       },
@@ -1327,8 +1311,7 @@
 
     if (!pending) {
       if (t.higherIsBetter) {
-        const start = t.oldPB || 0;
-        progress = Math.max(0, Math.min(1, (t.current - start) / (t.goal - start)));
+        progress = Math.max(0, Math.min(1, t.current / t.goal));
       } else {
         const start = t.baseline || t.current;
         progress = Math.max(0, Math.min(1, (start - t.current) / (start - t.goal)));
